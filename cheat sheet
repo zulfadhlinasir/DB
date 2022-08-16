@@ -1,0 +1,179 @@
+\l - show database
+\c common - connect to DB common
+\dt+ - show tables
+\d components - get info,column from table components
+
+Here is an update from our Engineering team - there is some instability issues with the nginx object which is causing "runaway object generation". We'll need the following information and troubleshooting steps performed 
+Question: Are the nginx instances/nginx-controller-agents constantly restarting?
+Collect data:
+• On an affected nginx instance collect the following:
+        ○ nginx error logs (/var/log/nginx/error.log)
+        ○ controller-agent debug logs
+        ○ controller-agent config (/etc/nginx-controller/agent.conf)
+• On the NGINX Controller do the following:
+        ○ clear the objects table (Below DELETE)
+kubectl port-forward --address 0.0.0.0 controller-postgres-0 5432:5432
+ 
+# From an external client with psql
+psql -h <ctrl_host> -U naas -d common
+ 
+DELETE FROM objects_tags WHERE object_id IN (SELECT id FROM objects WHERE id NOT IN (SELECT nginx_id FROM instances) AND type = 'nginx');
+DELETE FROM objects WHERE id NOT IN (SELECT nginx_id FROM instances) AND type = 'nginx';
+Rule out UI Issue
+Rule out UI issue
+In order to rule in/out a UI issue, you can hit the API {{baseUrl}}/analytics/metrics?names=nginx.http.request.count&startTime=now-5m&endTime=now - this will query the data from clickhouse. You can also execute a query with the clickhouse client - just replace %ip-172-16-0-196.us-west-2.compute.internal% with the correct instance name to see the values  :
+
+[centos@ip-172-16-0-18 ~]$ kubectl exec -it $(kubectl get pod -l app=clickhouse -o name) -- clickhouse-client -u reader --password $(kubectl get $(kubectl get secret -oname | grep clickhouse-secret) -o json | jq -r .data.CLICKHOUSE_PASS_reader | base64 -d) --query "select timestamp,name,value from controller.metrics_5min WHERE name LIKE '%nginx.http.request.count%' AND instance LIKE '%ip-172-16-0-196.us-west-2.compute.internal%';"
+2022-04-08 02:40:00	nginx.http.request.count	135
+2022-04-08 02:35:00	nginx.http.request.count	135
+2022-04-08 02:10:00	nginx.http.request.count	72
+2022-04-08 02:15:00	nginx.http.request.count	127
+2022-04-08 02:20:00	nginx.http.request.count	115
+2022-04-08 02:25:00	nginx.http.request.count	135
+2022-04-08 02:30:00	nginx.http.request.count	135
+
+ith the sequence below, we will remove all the references to old identity providers related to the test component:
+
+# kubectl exec -it controller-postgres-0 /bin/bash
+ 
+bash-5.1# psql -U naas
+psql (12.5)
+Type "help" for help.
+ 
+naas=# \c common
+You are now connected to database "common" as user "naas".
+ 
+common=# UPDATE components SET desired_state = desired_state - 'security' WHERE id = 150;
+common=# UPDATE components SET current_status = desired_state WHERE id = 150;
+common=# DELETE FROM components_identity_providers WHERE component_id = 150;
+common=# \q
+ 
+bash-5.1# exit
+exit
+Once you have this, edit again the test component and assign a new identity provider. Push the config and see if it works.
+
+If it fails again, collect a new supportpkg and the output of the following query:
+
+# kubectl exec -it controller-postgres-0 /bin/bash
+ 
+bash-5.1# psql -U naas
+psql (12.5)
+Type "help" for help.
+ 
+naas=# \c common
+You are now connected to database "common" as user "naas".
+ 
+common=# SELECT * from identity_providers;
+common=# \q
+ 
+bash-5.1# exit
+exit
+
+postgres=# \c common
+You are now connected to database "common" as user "postgres".
+common=# select COUNT(*) from identity_providers;
+ count
+-------
+     4
+(1 row)
+
+common=# select * from identity_providers;
+ id |     name     |  type   |           ctime            |           mtime            | hashed | data | env_id |
+                                  desired_state                                                                                                     | display_nam
+onfigured | is_configuring | is_deleting | is_error |
+                                                                     current_status
+                                                                                                   |                 uuid                 | tags | description |
+----+--------------+---------+----------------------------+----------------------------+--------+------+--------+------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------+------------
+----------+----------------+-------------+----------+------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------
+---------------------------------------------------------------------------------------------------+--------------------------------------+------+-------------+-
+  3 | url-api      | API_KEY | 2022-03-22 13:10:25.841852 | 2022-03-22 13:10:25.841852 |        |      |      3 | {"environmentRefs": [{"ref": "/services/environ
+"identityProvider": {"type": "API_KEY"}}                                                                                                            |
+          | f              | f           | f        | {"state": {"selfConfigState": {"error": 0, "total": 1, "isError": false, "deleting": 0, "configured": 1, "i
+"configuring": 0, "isConfigured": true, "isConfiguring": false}}, "environmentRefs": [{"ref": "/services/environments/afso-env"}], "identityProvider": {"type": "
+                                                                                                   | cad856d4-d0a1-4867-ac7d-12815fcf20c7 | {}   |             |
+  2 | ptl-bandisso | JWT     | 2022-03-22 13:06:36.63685  | 2022-03-22 13:06:36.63685  |        |      |      2 | {"environmentRefs": [{"ref": "/services/environ
+identityProvider": {"type": "JWT", "jwkFile": {"uri": "http://sso.comis5.kma.go.kr/api/public/jwks", "type": "REMOTE_FILE", "cacheExpire": "12m"}}} |
+          | f              | f           | f        | {"state": {"selfConfigState": {"error": 0, "total": 1, "isError": false, "deleting": 0, "configured": 1, "i
+"configuring": 0, "isConfigured": true, "isConfiguring": false}}, "environmentRefs": [{"ref": "/services/environments/ptl-env"}], "identityProvider": {"type": "J
+ri": "http://sso.comis5.kma.go.kr/api/public/jwks", "type": "REMOTE_FILE", "cacheExpire": "12m"}}} | e54e2780-be8e-4f29-8229-fab16a6ac79b | {}   |             |
+  1 | bandisso     | JWT     | 2022-03-22 13:06:12.863649 | 2022-03-22 13:06:12.863649 |        |      |      1 | {"environmentRefs": [{"ref": "/services/environ
+tityProvider": {"type": "JWT", "jwkFile": {"uri": "http://sso.comis5.kma.go.kr/api/public/jwks", "type": "REMOTE_FILE", "cacheExpire": "15m"}}}     |
+          | f              | f           | f        | {"state": {"selfConfigState": {"error": 0, "total": 1, "isError": false, "deleting": 0, "configured": 1, "i
+"configuring": 0, "isConfigured": true, "isConfiguring": false}}, "environmentRefs": [{"ref": "/services/environments/env"}], "identityProvider": {"type": "JWT",
+ "http://sso.comis5.kma.go.kr/api/public/jwks", "type": "REMOTE_FILE", "cacheExpire": "15m"}}}     | 6d20008c-d041-4cb7-9221-50101117f3d0 | {}   |             |
+  4 | test-idp     | API_KEY | 2022-03-22 15:51:16.533388 | 2022-03-22 15:51:16.533388 |        |      |      2 | {"environmentRefs": [{"ref": "/services/environ
+identityProvider": {"type": "API_KEY"}}                                                                                                             |
+          | f              | f           | f        | {"state": {"selfConfigState": {"error": 0, "total": 1, "isError": false, "deleting": 0, "configured": 1, "i
+"configuring": 0, "isConfigured": true, "isConfiguring": false}}, "environmentRefs": [{"ref": "/services/environments/ptl-env"}], "identityProvider": {"type": "A
+                                                                                                   | bd6253bc-5729-44a8-acef-ba651d14516d | {}   |             |
+(4 rows)
+
+common=# select name,desired_state::json->'security'->'identityProviderRefs' from components;
+                name                |                        ?column?
+------------------------------------+--------------------------------------------------------
+ api.cgi-bin.aws3.nph-aws3m_tms_d02 | [{"ref": "/security/identity-providers/ptl-bandisso"}]
+ api.cgi-bin.aws3.nph-aws3m_tms_h24 | [{"ref": "/security/identity-providers/ptl-bandisso"}]
+ api.cgi-bin.aws3.nph-aws3_ana1     | [{"ref": "/security/identity-providers/ptl-bandisso"}]
+ api.cgi-bin.sea.nph-sea_obs_imgp1  | [{"ref": "/security/identity-providers/ptl-bandisso"}]
+ api.cgi-bin.aws3.nph-aws3_ana2     | [{"ref": "/security/identity-providers/bandisso"}]
+ api.cgi-bin.aws3.nph-lau_view      | [{"ref": "/security/identity-providers/ptl-bandisso"}]
+ api.cgi-bin.aws3.nph-aws3_min_imgp | [{"ref": "/security/identity-providers/bandisso"}]
+ api.cgi-bin.lgt.nph-lgt_dst_imgp   | [{"ref": "/security/identity-providers/bandisso"}]
+ api.cgi-bin.sea.nph-sea_obs_imgp1  | [{"ref": "/security/identity-providers/bandisso"}]
+ api.cgi-bin.aws3.nph-aws3m_tms_d12 | [{"ref": "/security/identity-providers/ptl-bandisso"}]
+ api.cgi-bin.aws3.nph-aws3_min_imgp | [{"ref": "/security/identity-providers/ptl-bandisso"}]
+ api.cgi-bin.aws3.nph-aws3m_tms_h06 | [{"ref": "/security/identity-providers/bandisso"}]
+ api.cgi-bin.aws3.nph-aws3m_tms_d04 | [{"ref": "/security/identity-providers/ptl-bandisso"}]
+ api.cgi-bin.lgt.nph-lgt_str_imgp   | [{"ref": "/security/identity-providers/ptl-bandisso"}]
+ api.cgi-bin.url.nph-aws2_min       | [{"ref": "/security/identity-providers/url-api"}]
+ api.cgi-bin.aws3.nph-aws3_ana2     | [{"ref": "/security/identity-providers/ptl-bandisso"}]
+ api.cgi-bin.aws3.nph-aws3m_tms_h06 | [{"ref": "/security/identity-providers/ptl-bandisso"}]
+ api.cgi-bin.lgt.nph-lgt_ana_imgp   | [{"ref": "/security/identity-providers/ptl-bandisso"}]
+ api.cgi-bin.lgt.nph-lgt_dst_imgp   | [{"ref": "/security/identity-providers/ptl-bandisso"}]
+ test                               | [{"ref": "/security/identity-providers/test-idp"}]
+ api.cgi-bin.aws3.nph-aws3m_tms_d12 | [{"ref": "/security/identity-providers/bandisso"}]
+ api.cgi-bin.aws3.nph-aws3m_tms_d08 | [{"ref": "/security/identity-providers/bandisso"}]
+ api.cgi-bin.aws3.nph-aws3m_tms_h12 | [{"ref": "/security/identity-providers/ptl-bandisso"}]
+ api.cgi-bin.aws3.nph-aws3m_tms_d02 | [{"ref": "/security/identity-providers/bandisso"}]
+ api.cgi-bin.aws3.nph-aws3m_tms_h12 | [{"ref": "/security/identity-providers/bandisso"}]
+ api.cgi-bin.aws3.nph-aws3m_tms_d08 | [{"ref": "/security/identity-providers/ptl-bandisso"}]
+ api.cgi-bin.lgt.nph-lgt_str_imgp   | [{"ref": "/security/identity-providers/bandisso"}]
+ api.cgi-bin.aws3.nph-aws3_ana1     | [{"ref": "/security/identity-providers/bandisso"}]
+ api.cgi-bin.aws3.nph-aws3m_tms_d04 | [{"ref": "/security/identity-providers/bandisso"}]
+ api.cgi-bin.lgt.nph-lgt_ana_imgp   | [{"ref": "/security/identity-providers/bandisso"}]
+ api.cgi-bin.aws3.nph-lau_view      | [{"ref": "/security/identity-providers/bandisso"}]
+ cp-test                            |
+ api.cgi-bin.aws3.nph-aws3m_tms_h24 | [{"ref": "/security/identity-providers/bandisso"}]
+(33 rows)
+
+common=# select id,name from components where name = 'test';
+ id  | name
+-----+------
+ 150 | test
+(1 row)
+
+common=# select * from components_identity_providers where component_id = 150;
+ component_id | identity_provider_id
+--------------+----------------------
+          150 |                    4
+(1 row)
+
+common=# select id,name from apps;
+ id |   name
+----+----------
+  1 | aws-capi
+  2 | aws-capi
+  3 | aws-uapi
+  6 | test-app
+  7 | eqk-uapi
+  8 | eqk-uapi
+  9 | eqk-uapi
+ 10 | fct-uapi
+ 11 | fct-uapi
+ 12 | dst-capi
+ 13 | dst-capi
+ 14 | aws-uapi
+ 15 | aws-uapi
+(13 rows)
