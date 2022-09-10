@@ -78,38 +78,7 @@ common=# select COUNT(*) from identity_providers;
 (1 row)
 
 common=# select * from identity_providers;
- id |     name     |  type   |           ctime            |           mtime            | hashed | data | env_id |
-                                  desired_state                                                                                                     | display_nam
-onfigured | is_configuring | is_deleting | is_error |
-                                                                     current_status
-                                                                                                   |                 uuid                 | tags | description |
-----+--------------+---------+----------------------------+----------------------------+--------+------+--------+------------------------------------------------
-----------------------------------------------------------------------------------------------------------------------------------------------------+------------
-----------+----------------+-------------+----------+------------------------------------------------------------------------------------------------------------
------------------------------------------------------------------------------------------------------------------------------------------------------------------
----------------------------------------------------------------------------------------------------+--------------------------------------+------+-------------+-
-  3 | url-api      | API_KEY | 2022-03-22 13:10:25.841852 | 2022-03-22 13:10:25.841852 |        |      |      3 | {"environmentRefs": [{"ref": "/services/environ
-"identityProvider": {"type": "API_KEY"}}                                                                                                            |
-          | f              | f           | f        | {"state": {"selfConfigState": {"error": 0, "total": 1, "isError": false, "deleting": 0, "configured": 1, "i
-"configuring": 0, "isConfigured": true, "isConfiguring": false}}, "environmentRefs": [{"ref": "/services/environments/afso-env"}], "identityProvider": {"type": "
-                                                                                                   | cad856d4-d0a1-4867-ac7d-12815fcf20c7 | {}   |             |
-  2 | ptl-bandisso | JWT     | 2022-03-22 13:06:36.63685  | 2022-03-22 13:06:36.63685  |        |      |      2 | {"environmentRefs": [{"ref": "/services/environ
-identityProvider": {"type": "JWT", "jwkFile": {"uri": "http://sso.comis5.kma.go.kr/api/public/jwks", "type": "REMOTE_FILE", "cacheExpire": "12m"}}} |
-          | f              | f           | f        | {"state": {"selfConfigState": {"error": 0, "total": 1, "isError": false, "deleting": 0, "configured": 1, "i
-"configuring": 0, "isConfigured": true, "isConfiguring": false}}, "environmentRefs": [{"ref": "/services/environments/ptl-env"}], "identityProvider": {"type": "J
-ri": "http://sso.comis5.kma.go.kr/api/public/jwks", "type": "REMOTE_FILE", "cacheExpire": "12m"}}} | e54e2780-be8e-4f29-8229-fab16a6ac79b | {}   |             |
-  1 | bandisso     | JWT     | 2022-03-22 13:06:12.863649 | 2022-03-22 13:06:12.863649 |        |      |      1 | {"environmentRefs": [{"ref": "/services/environ
-tityProvider": {"type": "JWT", "jwkFile": {"uri": "http://sso.comis5.kmpoi.gokckckr/api/public/jwks", "type": "REMOTE_FILE", "cacheExpire": "15m"}}}     |
-          | f              | f           | f        | {"state": {"selfConfigState": {"error": 0, "total": 1, "isError": false, "deleting": 0, "configured": 1, "i
-"configuring": 0, "isConfigured": true, "isConfiguring": false}}, "environmentRefs": [{"ref": "/services/environments/env"}], "identityProvider": {"type": "JWT",
- "http://sso.co,cmc,kdk,dmdmckma.go.kr/api/public/jwks", "type": "REMOTE_FILE", "cacheExpire": "15m"}}}     | 6d20008c-d041-4cb7-9221-50101117f3d0 | {}   |             |
-  4 | test-idp     | API_KEY | 2022-03-22 15:51:16.533388 | 2022-03-22 15:51:16.533388 |        |      |      2 | {"environmentRefs": [{"ref": "/services/environ
-identityProvider": {"type": "API_KEY"}}                                                                                                             |
-          | f              | f           | f        | {"state": {"selfConfigState": {"error": 0, "total": 1, "isError": false, "deleting": 0, "configured": 1, "i
-"configuring": 0, "isConfigured": true, "isConfiguring": false}}, "environmentRefs": [{"ref": "/services/environments/jdkcmmxx-env"}], "identityProvider": {"type": "A
-                                                                                                   | bd6253bc-5729-44a8-acefmcmdmmdmdmdmc651d14516d | {}   |             |
-(4 rows)
-
+ 
 common=# select name,desired_state::json->'security'->'identityProviderRefs' from components;
                 name                |                        ?column?
 ------------------------------------+--------------------------------------------------------
