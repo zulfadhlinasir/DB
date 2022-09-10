@@ -134,17 +134,7 @@ common=# select * from components_identity_providers where component_id = 150;
 common=# select id,name from apps;
  id |   name
 ----+----------
-  1 | aws-capi
-  2 | aws-capi
-  3 | aws-uapi
-  6 | test-app
-  7 | eqk-uapi
-  8 | eqk-uapi
-  9 | eqk-uapi
- 10 | fct-uapi
- 11 | fct-uapi
- 12 | dst-capi
- 13 | dst-capi
- 14 | aws-uapi
- 15 | aws-uapi
+  1 | aws-mdmdmd
+  2 | aws-mmfmfmf
+  3 | aws-mfmmfmfm
 (13 rows)
