@@ -99,54 +99,25 @@ identityProvider": {"type": "JWT", "jwkFile": {"uri": "http://sso.comis5.kma.go.
 "configuring": 0, "isConfigured": true, "isConfiguring": false}}, "environmentRefs": [{"ref": "/services/environments/ptl-env"}], "identityProvider": {"type": "J
 ri": "http://sso.comis5.kma.go.kr/api/public/jwks", "type": "REMOTE_FILE", "cacheExpire": "12m"}}} | e54e2780-be8e-4f29-8229-fab16a6ac79b | {}   |             |
   1 | bandisso     | JWT     | 2022-03-22 13:06:12.863649 | 2022-03-22 13:06:12.863649 |        |      |      1 | {"environmentRefs": [{"ref": "/services/environ
-tityProvider": {"type": "JWT", "jwkFile": {"uri": "http://sso.comis5.kma.go.kr/api/public/jwks", "type": "REMOTE_FILE", "cacheExpire": "15m"}}}     |
+tityProvider": {"type": "JWT", "jwkFile": {"uri": "http://sso.comis5.kmpoi.gokckckr/api/public/jwks", "type": "REMOTE_FILE", "cacheExpire": "15m"}}}     |
           | f              | f           | f        | {"state": {"selfConfigState": {"error": 0, "total": 1, "isError": false, "deleting": 0, "configured": 1, "i
 "configuring": 0, "isConfigured": true, "isConfiguring": false}}, "environmentRefs": [{"ref": "/services/environments/env"}], "identityProvider": {"type": "JWT",
- "http://sso.comis5.kma.go.kr/api/public/jwks", "type": "REMOTE_FILE", "cacheExpire": "15m"}}}     | 6d20008c-d041-4cb7-9221-50101117f3d0 | {}   |             |
+ "http://sso.co,cmc,kdk,dmdmckma.go.kr/api/public/jwks", "type": "REMOTE_FILE", "cacheExpire": "15m"}}}     | 6d20008c-d041-4cb7-9221-50101117f3d0 | {}   |             |
   4 | test-idp     | API_KEY | 2022-03-22 15:51:16.533388 | 2022-03-22 15:51:16.533388 |        |      |      2 | {"environmentRefs": [{"ref": "/services/environ
 identityProvider": {"type": "API_KEY"}}                                                                                                             |
           | f              | f           | f        | {"state": {"selfConfigState": {"error": 0, "total": 1, "isError": false, "deleting": 0, "configured": 1, "i
-"configuring": 0, "isConfigured": true, "isConfiguring": false}}, "environmentRefs": [{"ref": "/services/environments/ptl-env"}], "identityProvider": {"type": "A
-                                                                                                   | bd6253bc-5729-44a8-acef-ba651d14516d | {}   |             |
+"configuring": 0, "isConfigured": true, "isConfiguring": false}}, "environmentRefs": [{"ref": "/services/environments/jdkcmmxx-env"}], "identityProvider": {"type": "A
+                                                                                                   | bd6253bc-5729-44a8-acefmcmdmmdmdmdmc651d14516d | {}   |             |
 (4 rows)
 
 common=# select name,desired_state::json->'security'->'identityProviderRefs' from components;
                 name                |                        ?column?
 ------------------------------------+--------------------------------------------------------
- api.cgi-bin.aws3.nph-aws3m_tms_d02 | [{"ref": "/security/identity-providers/ptl-bandisso"}]
- api.cgi-bin.aws3.nph-aws3m_tms_h24 | [{"ref": "/security/identity-providers/ptl-bandisso"}]
- api.cgi-bin.aws3.nph-aws3_ana1     | [{"ref": "/security/identity-providers/ptl-bandisso"}]
- api.cgi-bin.sea.nph-sea_obs_imgp1  | [{"ref": "/security/identity-providers/ptl-bandisso"}]
- api.cgi-bin.aws3.nph-aws3_ana2     | [{"ref": "/security/identity-providers/bandisso"}]
- api.cgi-bin.aws3.nph-lau_view      | [{"ref": "/security/identity-providers/ptl-bandisso"}]
- api.cgi-bin.aws3.nph-aws3_min_imgp | [{"ref": "/security/identity-providers/bandisso"}]
- api.cgi-bin.lgt.nph-lgt_dst_imgp   | [{"ref": "/security/identity-providers/bandisso"}]
- api.cgi-bin.sea.nph-sea_obs_imgp1  | [{"ref": "/security/identity-providers/bandisso"}]
- api.cgi-bin.aws3.nph-aws3m_tms_d12 | [{"ref": "/security/identity-providers/ptl-bandisso"}]
- api.cgi-bin.aws3.nph-aws3_min_imgp | [{"ref": "/security/identity-providers/ptl-bandisso"}]
- api.cgi-bin.aws3.nph-aws3m_tms_h06 | [{"ref": "/security/identity-providers/bandisso"}]
- api.cgi-bin.aws3.nph-aws3m_tms_d04 | [{"ref": "/security/identity-providers/ptl-bandisso"}]
- api.cgi-bin.lgt.nph-lgt_str_imgp   | [{"ref": "/security/identity-providers/ptl-bandisso"}]
- api.cgi-bin.url.nph-aws2_min       | [{"ref": "/security/identity-providers/url-api"}]
- api.cgi-bin.aws3.nph-aws3_ana2     | [{"ref": "/security/identity-providers/ptl-bandisso"}]
- api.cgi-bin.aws3.nph-aws3m_tms_h06 | [{"ref": "/security/identity-providers/ptl-bandisso"}]
- api.cgi-bin.lgt.nph-lgt_ana_imgp   | [{"ref": "/security/identity-providers/ptl-bandisso"}]
- api.cgi-bin.lgt.nph-lgt_dst_imgp   | [{"ref": "/security/identity-providers/ptl-bandisso"}]
- test                               | [{"ref": "/security/identity-providers/test-idp"}]
- api.cgi-bin.aws3.nph-aws3m_tms_d12 | [{"ref": "/security/identity-providers/bandisso"}]
- api.cgi-bin.aws3.nph-aws3m_tms_d08 | [{"ref": "/security/identity-providers/bandisso"}]
- api.cgi-bin.aws3.nph-aws3m_tms_h12 | [{"ref": "/security/identity-providers/ptl-bandisso"}]
- api.cgi-bin.aws3.nph-aws3m_tms_d02 | [{"ref": "/security/identity-providers/bandisso"}]
- api.cgi-bin.aws3.nph-aws3m_tms_h12 | [{"ref": "/security/identity-providers/bandisso"}]
- api.cgi-bin.aws3.nph-aws3m_tms_d08 | [{"ref": "/security/identity-providers/ptl-bandisso"}]
- api.cgi-bin.lgt.nph-lgt_str_imgp   | [{"ref": "/security/identity-providers/bandisso"}]
- api.cgi-bin.aws3.nph-aws3_ana1     | [{"ref": "/security/identity-providers/bandisso"}]
- api.cgi-bin.aws3.nph-aws3m_tms_d04 | [{"ref": "/security/identity-providers/bandisso"}]
- api.cgi-bin.lgt.nph-lgt_ana_imgp   | [{"ref": "/security/identity-providers/bandisso"}]
- api.cgi-bin.aws3.nph-lau_view      | [{"ref": "/security/identity-providers/bandisso"}]
- cp-test                            |
- api.cgi-bin.aws3.nph-aws3m_tms_h24 | [{"ref": "/security/identity-providers/bandisso"}]
-(33 rows)
+ api.cgi-bin.aws3.nph-aws3m_tms_d02 | [{"ref": "/security/identity-providers/ptl-kckkckckc"}]
+ api.cgi-bin.aws3.nph-aws3m_tms_h24 | [{"ref": "/security/identity-providers/ptl-jdjcjdd"}]
+ api.cgi-bin.aws3.nph-aws3_ana1     | [{"ref": "/security/identity-providers/ptl-idicic"}]
+ api.cgi-bin.sea.nph-sea_obs_imgp1  | [{"ref": "/security/identity-providers/ptl-jdjcjjcjcc"}]
+
 
 common=# select id,name from components where name = 'test';
  id  | name
