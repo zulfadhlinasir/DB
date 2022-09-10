@@ -82,10 +82,10 @@ common=# select * from identity_providers;
 common=# select name,desired_state::json->'security'->'identityProviderRefs' from components;
                 name                |                        ?column?
 ------------------------------------+--------------------------------------------------------
- api.cgi-bin.aws3.nph-aws3m_tms_d02 | [{"ref": "/security/identity-providers/ptl-kckkckckc"}]
- api.cgi-bin.aws3.nph-aws3m_tms_h24 | [{"ref": "/security/identity-providers/ptl-jdjcjdd"}]
- api.cgi-bin.aws3.nph-aws3_ana1     | [{"ref": "/security/identity-providers/ptl-idicic"}]
- api.cgi-bin.sea.nph-sea_obs_imgp1  | [{"ref": "/security/identity-providers/ptl-jdjcjjcjcc"}]
+ api.cgi-bin.aws3.nph-jfjf_tms_d02 | [{"ref": "/security/identity-providers/ptl-kckkckckc"}]jfjfjjf
+ api.cgi-bin.aws3.nph-jfjfj_tms_h24 | [{"ref": "/security/identity-providers/ptl-jdjcjdd"}]
+ api.cgi-bin.aws3.mdmdm-aws3_ana1     | [{"ref": "/security/identity-providers/ptl-idicic"}]
+ api.cgi-bin.sea.nph-krkfj_obs_imgp1  | [{"ref": "/security/identity-providers/ptl-jdjcjjcjcc"}]
 
 
 common=# select id,name from components where name = 'test';
